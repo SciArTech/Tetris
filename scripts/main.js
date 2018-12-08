@@ -100,6 +100,12 @@ var Game = {
         }
 
         Game.score += 10;
+
+        if (Game.score >= (Game.level * 2000)) {
+            Game.level++;
+            Game.speed -= 20;
+        }
+        Game.levelElem.firstChild.nodeValue = Game.level;        
         Game.scoreElem.firstChild.nodeValue = Game.score;
 
         clearTimeout(Game.timeoutId);
@@ -159,14 +165,14 @@ var Game = {
                         break;
                 }
                 Game.score += deltaScore;
+
                 if (Game.score >= (Game.level * 2000)) {
                     Game.level++;
                     Game.speed -= 20;
                 }
-
+                Game.levelElem.firstChild.nodeValue = Game.level;
                 Game.linesElem.firstChild.nodeValue = Game.lines;
                 Game.scoreElem.firstChild.nodeValue = Game.score;
-                Game.levelElem.firstChild.nodeValue = Game.level;
             }
         } else {
             Game.flashCount = 0;

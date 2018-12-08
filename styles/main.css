@@ -121,6 +121,7 @@ body {
 
 #bar #score {
   height: 75px;
+  border-radius: 8px;
 }
 
 #bar #score .label {
@@ -297,7 +298,7 @@ body {
   background-color: transparent;
 
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
