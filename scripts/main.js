@@ -386,6 +386,10 @@ var replayKeyHandler = function(event) {
     }
 };
 
+var infoHandler = function() {
+    document.getElementById("info-board").classList.toggle("show");
+};
+
 var operationHandler = function(event) {
     if (Game.status === "on") {
         switch(event.keyCode) {
@@ -421,6 +425,8 @@ window.addEventListener("load", function() {
     Game.map.element = document.getElementById("map");
     Game.pause = document.getElementById("pause-btn");
     Game.replay = document.getElementById("replay-btn");
+
+    document.getElementById("info-btn").addEventListener("click", infoHandler, false);
 
     Game.scoreElem = document.getElementById("score-num");
     Game.linesElem = document.getElementById("lines-num");
