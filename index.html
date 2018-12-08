@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Tetris - 俄罗斯方块</title>
+  <link rel="stylesheet" href="styles/normalize.css">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <div id="board">
+    <div id="map"></div>
+    <div id="bar">
+      <ul id="logo">TETRIS</ul>
+      <ul id="info">
+        <li class="info-item" id="score">
+          <div class="label">分数</div>
+          <div class="number" id="score-num">0</div>
+        </li>
+        <li class="info-item" id="lines">
+          <div class="label">行数</div>
+          <div class="number" id="lines-num">0</div>
+        </li>
+        <li class="info-item" id="level">
+          <div class="label">等级</div>
+          <div class="number" id="level-num">1</div>
+        </li>
+      </ul>
+      <ul id="next">
+        <li class="nextbox">
+          <div class="next-block next-1 next-z next-l"></div>
+          <div class="next-block next-2 next-z next-s next-t next-o"></div>
+          <div class="next-block next-3 next-s next-j next-o"></div>
+          <div class="next-block next-4"></div>
+          <div class="next-block next-5 next-s next-l next-j next-i next-t"></div>
+          <div class="next-block next-6 next-z next-s next-l next-j next-i next-t next-o"></div>
+          <div class="next-block next-7 next-z next-l next-j next-i next-t next-o"></div>
+          <div class="next-block next-8 next-i"></div>
+        </li>
+      </ul>
+      <ul id="control">
+        <li class="btn-item" id="pause">
+          <div class="btn" id="pause-btn"></div>
+        </li>
+        <li class="btn-item" id="replay">
+          <div class="btn" id="replay-btn"></div>
+        </li>
+        <li class="btn-item" id="info-btn-item">
+          <div class="btn" id="info-btn"></div>
+        </li>
+      </ul>
+    </div>
+    <div id="info-board">
+      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eos fugiat unde pariatur dolorum excepturi fuga voluptatum ad. Sed corporis fuga perspiciatis modi, nam, quas expedita autem illo maxime qui nemo?</p>
+      <p>俄罗斯方块 哈哈</p>
+    </div>
+  </div>
+  <script src="scripts/main.js"></script>
+</body>
+</html>
