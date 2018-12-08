@@ -1,3 +1,13 @@
+function compare(value1, value2) {
+    if (value1 < value2) {
+        return 1;
+    } else if (value1 > value2) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
 var Game = {
     status: "off", //"on" or "off"
     pause: null,
@@ -49,19 +59,20 @@ var Game = {
 
     // 当tetromino落地时 
     setTetromino: function() {
+        var linesIndex = [];
         for (var i = 0; i < 4; i++) {
             var n = 20 - (parseInt(Game.tetromino.blocks[i].style.top) / 30) - 1; // 行所在下标
 
             Game.map.blocks[n].push(Game.tetromino.blocks[i]);
-        }
-        for (var a = 19; a >= 0; a--) {
-            if (Game.map.blocks[a].length === 10) {
-                for (var j = 0; j < 10; j++) {
-                    Game.map.blocks[a][j].classList.add("toFlash");
-                }
-                Game.flash();
-
+            if (Game.map.blocks[n].length === 10) {
+                linesIndex.push(n);
+                // for (var j = 0; j < 10; j++) {
+                //     Game.map.blocks[n][j].classList.add("toFlash");
+                // }
             }
+        }
+        if (linesIndex.length) {
+            Game.flash(linesIndex);
         }
 
         clearTimeout(Game.timeoutId);
@@ -72,27 +83,40 @@ var Game = {
 
     // 延时调用闪烁方块
     flashCount: 0,
-    flash: function() {
-        var blocks = document.getElementsByClassName("toFlash"); 
-        for (var i = 0; i < blocks.length; i++) {
-            blocks[i].classList.toggle("flashing");            
+    // 清除已满的行
+    flash: function(linesIndex) {
+        // var blocks = document.getElementsByClassName("toFlash"); 
+        
+        for (var i = 0; i < linesIndex.length; i++) {
+            for (var j = 0; j < 10; j++) {
+                Game.map.blocks[linesIndex[i]][j].classList.toggle("flashing");
+            }
         }
-        if (Game.flashCount < 3) {
-            setTimeout(Game.flash, 250);
+        // for (var i = 0; i < blocks.length; i++) {
+        //     blocks[i].classList.toggle("flashing");            
+        // }
+        if (Game.flashCount < 4) {
+            setTimeout("Game.flash(["+linesIndex.toString()+"])", 250);
             Game.flashCount++;
         } else {
             Game.flashCount = 0;
-            var n = 20 - (parseInt(blocks[0].style.top) / 30) - 1; // 行所在下标
-            for (var i = n + 1; i < 20; i++) {
-                Game.map.blocks[i-1] = Game.map.blocks[i];
-                for (var j = 0; j < Game.map.blocks[i-1].length; j++) {
-                    Game.map.blocks[i-1][j].style.top = (20 - i) * 30 + "px";
-                } 
+
+            linesIndex.sort(compare); // 降序排序 从上面的行开始处理
+            for (var a = 0; a < linesIndex.length; a++) {
+                // var n = 20 - (parseInt(blocks[0].style.top) / 30) - 1; // 行所在下标
+                n = linesIndex[a]; // 行所在下标
+                for (var i = Game.map.blocks[n].length - 1; i >= 0; i--) {
+                    Game.map.element.removeChild(Game.map.blocks[n][i]);
+                    // blocks[i].classList.remove("toFlash");                
+                }
+                for (var i = n + 1; i < 20; i++) {
+                    Game.map.blocks[i-1] = Game.map.blocks[i];
+                    Game.map.blocks[i] = [];
+                    for (var j = 0; j < Game.map.blocks[i-1].length; j++) {
+                        Game.map.blocks[i-1][j].style.top = (20 - i) * 30 + "px";
+                    } 
+                }
             }
-            for (var i = 9; i >= 0; i--) {
-                Game.map.element.removeChild(blocks[i]);
-                // blocks[i].classList.remove("toFlash");                
-            };
         }
     },
 

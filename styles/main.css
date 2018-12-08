@@ -59,9 +59,29 @@ body {
 
 #bar #logo {
   padding: 10px 0 10px 0;
-  font-size: 20px;
-  font-weight: 900;
   text-align: center;
+}
+
+#bar #logo li {
+  margin: 10px 20px;
+  padding: 10px;
+  font-size: 17px;
+  font-weight: 900;
+  border-radius: 25px;
+}
+
+#bar #logo li.main {
+  padding: 13px 0;
+  font-size: 36px;
+  font-weight: 900;
+  background-color: transparent;
+  font-style: italic;
+  text-decoration: underline;
+  border-radius: 0;
+}
+
+#bar #logo li.main a {
+  color: inherit;
 }
 
 #bar ul li.info-item {
@@ -95,11 +115,35 @@ body {
 
   width: 110px;
 
-  font-size: 20px;
+  font-size: 22px;
+  font-family: Consolas, sans-serif;  
 }
 
-ul#next .nextbox {
+#bar #score {
+  height: 75px;
+}
+
+#bar #score .label {
+  bottom: auto;
+  left: 0;
+  right: 0;
+  width: auto;
+  border-radius: 15px 15px 0 0;
+}
+
+#bar #score .number {
+  top: auto;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 45px;
+  line-height: 45px;
+  font-size: 30px;
+}
+
+#next .nextbox {
   position: relative;
+  /* padding: 20px 0; */
 
   width: 120px;
   height: 60px;
