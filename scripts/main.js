@@ -13,9 +13,20 @@ var Game = {
     pause: null,
     replay: null,
 
+    score: 0,
+    lines: 0,
+    level: 1,
+    scoreElem: null,
+    linesElem: null,
+    levelElem: null,
+
     // 重新开始时的游戏初始化
     prepare: function() {
-        Game.status = "off";        
+        Game.status = "off";
+        Game.pause.addEventListener("click", pauseHandler, false);
+        document.addEventListener("keydown", pauseKeyHandler, false);        
+        Game.pause.classList.remove("status-invalid");
+        Game.pause.classList.remove("status-start");    
         
         mapElem = Game.map.element;
         for (var len = mapElem.childNodes.length, i = len - 1; i >= 0; i--) {
@@ -24,6 +35,7 @@ var Game = {
 
         Game.tetromino = null;
         clearTimeout(Game.timeoutId);
+        Game.speed = 500;
 
         for (var i = 0; i < 20; i++) {
             Game.map.blocks[i] = new Array();
@@ -32,6 +44,13 @@ var Game = {
         Game.nextType = Game.typeCode[Math.floor(Math.random() * 7)];
         Game.changeNextBoard();
         // Game.createTetromino();
+
+        Game.score = 0;
+        Game.lines = 0;
+        Game.level = 1;
+        Game.linesElem.firstChild.nodeValue = Game.lines;
+        Game.scoreElem.firstChild.nodeValue = Game.score;
+        Game.levelElem.firstChild.nodeValue = Game.level;
     },
 
     // 刷新下一个面板
@@ -62,61 +81,95 @@ var Game = {
         var linesIndex = [];
         for (var i = 0; i < 4; i++) {
             var n = 20 - (parseInt(Game.tetromino.blocks[i].style.top) / 30) - 1; // 行所在下标
+            if (n >= 20) { // 游戏失败
+                Game.status = "off";
+                Game.pause.removeEventListener("click", pauseHandler, false);
+                document.removeEventListener("keydown", pauseKeyHandler, false);                           
+                Game.pause.classList.remove("status-start");
+                Game.pause.classList.add("status-invalid");
+                return false;
+            }
 
             Game.map.blocks[n].push(Game.tetromino.blocks[i]);
             if (Game.map.blocks[n].length === 10) {
                 linesIndex.push(n);
-                // for (var j = 0; j < 10; j++) {
-                //     Game.map.blocks[n][j].classList.add("toFlash");
-                // }
             }
         }
         if (linesIndex.length) {
             Game.flash(linesIndex);
         }
 
+        Game.score += 10;
+        Game.scoreElem.firstChild.nodeValue = Game.score;
+
         clearTimeout(Game.timeoutId);
         
         Game.createTetromino();
         Game.tetromino.moveDown();
+
+        return true;
     },
 
     // 延时调用闪烁方块
     flashCount: 0,
     // 清除已满的行
-    flash: function(linesIndex) {
-        // var blocks = document.getElementsByClassName("toFlash"); 
-        
-        for (var i = 0; i < linesIndex.length; i++) {
-            for (var j = 0; j < 10; j++) {
-                Game.map.blocks[linesIndex[i]][j].classList.toggle("flashing");
+    flash: function(linesIndex) {        
+        if (Game.tetromino) {
+            for (var i = 0; i < linesIndex.length; i++) {
+                for (var j = 0; j < 10; j++) {
+                    Game.map.blocks[linesIndex[i]][j].classList.toggle("flashing");
+                }
             }
-        }
-        // for (var i = 0; i < blocks.length; i++) {
-        //     blocks[i].classList.toggle("flashing");            
-        // }
-        if (Game.flashCount < 4) {
-            setTimeout("Game.flash(["+linesIndex.toString()+"])", 250);
-            Game.flashCount++;
+            if (Game.flashCount < 4) {
+                setTimeout("Game.flash(["+linesIndex.toString()+"])", 250);
+                Game.flashCount++;
+            } else {
+                Game.flashCount = 0;
+
+                linesIndex.sort(compare); // 降序排序 从上面的行开始处理
+                for (var a = 0; a < linesIndex.length; a++) {
+                    // var n = 20 - (parseInt(blocks[0].style.top) / 30) - 1; // 行所在下标
+                    n = linesIndex[a]; // 行所在下标
+                    for (var i = Game.map.blocks[n].length - 1; i >= 0; i--) {
+                        Game.map.element.removeChild(Game.map.blocks[n][i]);
+                    }
+                    for (var i = n + 1; i < 20; i++) {
+                        Game.map.blocks[i-1] = Game.map.blocks[i];
+                        Game.map.blocks[i] = [];
+                        for (var j = 0; j < Game.map.blocks[i-1].length; j++) {
+                            Game.map.blocks[i-1][j].style.top = (20 - i) * 30 + "px";
+                        } 
+                    }
+                }
+
+                Game.lines += linesIndex.length;
+                var deltaScore = 0;
+                switch(linesIndex.length) {
+                    case 1:
+                        deltaScore = 100;
+                        break;
+                    case 2:
+                        deltaScore = 200;
+                        break;
+                    case 3:
+                        deltaScore = 400;
+                        break;
+                    case 4:
+                        deltaScore = 800;
+                        break;
+                }
+                Game.score += deltaScore;
+                if (Game.score >= (Game.level * 2000)) {
+                    Game.level++;
+                    Game.speed -= 20;
+                }
+
+                Game.linesElem.firstChild.nodeValue = Game.lines;
+                Game.scoreElem.firstChild.nodeValue = Game.score;
+                Game.levelElem.firstChild.nodeValue = Game.level;
+            }
         } else {
             Game.flashCount = 0;
-
-            linesIndex.sort(compare); // 降序排序 从上面的行开始处理
-            for (var a = 0; a < linesIndex.length; a++) {
-                // var n = 20 - (parseInt(blocks[0].style.top) / 30) - 1; // 行所在下标
-                n = linesIndex[a]; // 行所在下标
-                for (var i = Game.map.blocks[n].length - 1; i >= 0; i--) {
-                    Game.map.element.removeChild(Game.map.blocks[n][i]);
-                    // blocks[i].classList.remove("toFlash");                
-                }
-                for (var i = n + 1; i < 20; i++) {
-                    Game.map.blocks[i-1] = Game.map.blocks[i];
-                    Game.map.blocks[i] = [];
-                    for (var j = 0; j < Game.map.blocks[i-1].length; j++) {
-                        Game.map.blocks[i-1][j].style.top = (20 - i) * 30 + "px";
-                    } 
-                }
-            }
         }
     },
 
@@ -175,7 +228,7 @@ var Game = {
         o: [4,5,-2,-2]
     },
     nextType: "",
-    SPEED: 1000
+    speed: 500
 };
 
 // tetromino 构造函数
@@ -223,7 +276,7 @@ Tetromino.prototype = {
             var result = Game.tetromino.move("down");
         
             if (result === true) {
-                Game.timeoutId = setTimeout(Game.tetromino.moveDown, Game.SPEED);            
+                Game.timeoutId = setTimeout(Game.tetromino.moveDown, Game.speed);            
             } else if (Game.status !== "off") {
                 Game.setTetromino();
             }
@@ -309,13 +362,28 @@ var pauseHandler = function() {
         }
         Game.status = "on";
         Game.tetromino.moveDown();
+
+        Game.pause.classList.add("status-start");
     } else {
         Game.status = "off";
+        Game.pause.classList.remove("status-start");
+    }
+};
+
+var pauseKeyHandler = function() {
+    if (event.keyCode === 80) {
+        pauseHandler();
     }
 };
 
 var replayHandler = function() {
     Game.prepare();
+};
+
+var replayKeyHandler = function(event) {
+    if (event.keyCode === 82) {
+        replayHandler();
+    }
 };
 
 var operationHandler = function(event) {
@@ -354,8 +422,14 @@ window.addEventListener("load", function() {
     Game.pause = document.getElementById("pause-btn");
     Game.replay = document.getElementById("replay-btn");
 
+    Game.scoreElem = document.getElementById("score-num");
+    Game.linesElem = document.getElementById("lines-num");
+    Game.levelElem = document.getElementById("level-num");
+
     Game.pause.addEventListener("click", pauseHandler, false);
+    document.addEventListener("keydown", pauseKeyHandler, false);
     Game.replay.addEventListener("click", replayHandler, false);
+    document.addEventListener("keydown", replayKeyHandler, false);
     document.addEventListener("keydown", operationHandler, false);
 
     Game.prepare();
