@@ -24,10 +24,10 @@ var Game = {
     prepare: function() {
         Game.status = "off";
         Game.pause.addEventListener("click", pauseHandler, false);
-        document.addEventListener("keydown", pauseKeyHandler, false);        
+        document.addEventListener("keydown", pauseKeyHandler, false);
         Game.pause.classList.remove("status-invalid");
-        Game.pause.classList.remove("status-start");    
-        
+        Game.pause.classList.remove("status-start");
+
         mapElem = Game.map.element;
         for (var len = mapElem.childNodes.length, i = len - 1; i >= 0; i--) {
             mapElem.removeChild(mapElem.childNodes[i]);
@@ -76,7 +76,7 @@ var Game = {
         Game.changeNextBoard();
     },
 
-    // 当tetromino落地时 
+    // 当tetromino落地时
     setTetromino: function() {
         var linesIndex = [];
         for (var i = 0; i < 4; i++) {
@@ -84,7 +84,7 @@ var Game = {
             if (n >= 20) { // 游戏失败
                 Game.status = "off";
                 Game.pause.removeEventListener("click", pauseHandler, false);
-                document.removeEventListener("keydown", pauseKeyHandler, false);                           
+                document.removeEventListener("keydown", pauseKeyHandler, false);
                 Game.pause.classList.remove("status-start");
                 Game.pause.classList.add("status-invalid");
                 return false;
@@ -105,11 +105,11 @@ var Game = {
             Game.level++;
             Game.speed -= 20;
         }
-        Game.levelElem.firstChild.nodeValue = Game.level;        
+        Game.levelElem.firstChild.nodeValue = Game.level;
         Game.scoreElem.firstChild.nodeValue = Game.score;
 
         clearTimeout(Game.timeoutId);
-        
+
         Game.createTetromino();
         Game.tetromino.moveDown();
 
@@ -119,7 +119,7 @@ var Game = {
     // 延时调用闪烁方块
     flashCount: 0,
     // 清除已满的行
-    flash: function(linesIndex) {        
+    flash: function(linesIndex) {
         if (Game.tetromino) {
             for (var i = 0; i < linesIndex.length; i++) {
                 for (var j = 0; j < 10; j++) {
@@ -144,7 +144,7 @@ var Game = {
                         Game.map.blocks[i] = [];
                         for (var j = 0; j < Game.map.blocks[i-1].length; j++) {
                             Game.map.blocks[i-1][j].style.top = (20 - i) * 30 + "px";
-                        } 
+                        }
                     }
                 }
 
@@ -203,11 +203,11 @@ var Game = {
         element: null,
         width: 10,
         height: 20,
-        blocks: [], // 每一项存储一行 每一行也是一个数组 
+        blocks: [], // 每一项存储一行 每一行也是一个数组
 
         // 如果有给定坐标的节点，返回true
         hasItem : function(pos) {
-            for (var i = 0, length = this.blocks.length; i < length; i++) { 
+            for (var i = 0, length = this.blocks.length; i < length; i++) {
                 for (var j = 0, len = this.blocks[i].length; j < len; j++) {
                     if (this.blocks[i][j]) {
                         for (var n = 0; n < 4; n++) {
@@ -265,7 +265,7 @@ Tetromino.prototype = {
 
     move: function(dir) {
         var newPos = Game.tetromino.calculate(dir);
-        if (Game.check(newPos)) {            
+        if (Game.check(newPos)) {
             for (var i = 0; i < 4; i++) {
                 Game.tetromino.blocks[i].style.top = newPos[i].top + "px";
                 Game.tetromino.blocks[i].style.left = newPos[i].left + "px";
@@ -278,11 +278,11 @@ Tetromino.prototype = {
     // moveLeft: function() {},
     // moveRight: function() {},
     moveDown: function() {
-        if (Game.tetromino instanceof Tetromino) { 
+        if (Game.tetromino instanceof Tetromino) {
             var result = Game.tetromino.move("down");
-        
+
             if (result === true) {
-                Game.timeoutId = setTimeout(Game.tetromino.moveDown, Game.speed);            
+                Game.timeoutId = setTimeout(Game.tetromino.moveDown, Game.speed);
             } else if (Game.status !== "off") {
                 Game.setTetromino();
             }
@@ -347,13 +347,13 @@ Tetromino.prototype = {
                     posO.left = 0;
             }
 
-            var oldTop, oldLeft;            
+            var oldTop, oldLeft;
             for (var i = 0; i < 4; i++) {
                 oldTop = parseInt(this.blocks[i].style.top);
                 oldLeft = parseInt(this.blocks[i].style.left);
 
                 newPos[i].top = posO.top + oldLeft - posO.left;
-                newPos[i].left = posO.left + posO.top - oldTop; 
+                newPos[i].left = posO.left + posO.top - oldTop;
             }
         }
         return newPos;
@@ -401,7 +401,7 @@ var operationHandler = function(event) {
         switch(event.keyCode) {
             case 38:
             case 87:
-                // up                
+                // up
                 Game.tetromino.move("rotate");
                 break;
             case 39:
